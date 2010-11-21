@@ -14,5 +14,12 @@ object GitHubRepositoryExtractorSpec extends Specification {
       val sshURL = "git@github.com:oxlade39/scala.tmbundle.git"
       GitHubRepositoryExtractor(sshURL) mustEqual Some(GitHubRepository("oxlade39", "scala.tmbundle"))
     }
+
+    "extract a GitHubRepository from the default HTTP URL" in {
+      val httpURL = "https://oxlade39@github.com/oxlade39/scala.tmbundle.git"
+      GitHubRepositoryExtractor(httpURL) mustEqual Some(GitHubRepository("oxlade39", "scala.tmbundle"))
+
+      GitHubRepositoryExtractor("git://github.com/Constellation/ruby-net-github-upload.git") mustEqual Some(GitHubRepository("Constellation", "ruby-net-github-upload"))
+    }
   }
 }

@@ -9,10 +9,10 @@ sealed case class GitHubRepository(owner: String, repositoryName: String) {
 }
 
 object GitHubRepositoryExtractor {
-  val PATTERN ="""git@github.com:([\w*\d*]+)/([\w*\d*\.]+)\.git""".r
+  val PATTERN ="""(git@github.com:|https://\w*@github.com/|git://github.com/)(\w*)/([\w+[._-]]*\w*)\.git""".r
 
   def apply(url: String): Option[GitHubRepository] = url match {
-    case PATTERN(username, gitHubRepoName) => Some(GitHubRepository(username, gitHubRepoName))
+    case PATTERN(prefix, owner, repoName) => Some(GitHubRepository(owner, repoName))
     case _ => None
   }
 }

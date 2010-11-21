@@ -31,13 +31,9 @@ abstract class GitHubConfigFactory {
   }
 }
 
-trait GitRepositoryResolver {
-  def repository: Repository
-}
 
-trait DefaultGitRepositoryResolver extends GitRepositoryResolver {
-  def repository = new FileRepository(new File(System.getProperty("user.dir") + "/.git"))
-}
+
+
 
 sealed case class GitHubFile(localFile: File, description: String)
 

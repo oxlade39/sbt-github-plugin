@@ -2,36 +2,35 @@ package com.github.oxlade39.githubuploader
 
 import java.io.File
 import org.eclipse.jgit.lib.Repository
-import org.eclipse.jgit.storage.file.FileRepository
-import java.net.URL
-
-
 sealed case class GitHubConfig(login: String, token: String, repositoryName: String)
 
 abstract class GitHubConfigFactory {
+  import JGitRepositoryUtils.repositoryAccess
+
   def repository: Repository
 
   def apply(): GitHubConfig = {
     new GitHubConfig(login(repository), token(repository), repoName(repository))
   }
 
-  def login(repo: Repository): String = repo.getConfig.getString("github", null, "user")
-  def token(repo: Repository): String = repo.getConfig.getString("github", null, "token")
+  def login(repo: Repository): String = repo.login
+  def token(repo: Repository): String = repo.token
   def repoName(repo: Repository): String =
-    parseRemoteUrl(repo.getConfig.getString("remote", "origin", "url")).getOrElse {
+    GitHubRepositoryExtractor(repo.remoteURL).getOrElse {
       throw new RuntimeException("Couldn't determine url")
-    }
+    }.repositoryName
 
-  def parseRemoteUrl(url: String): Option[String] = {
-    val PATTERN ="""git@github.com:([\w*\d*]+)/([\w*\d*]+)\.git""".r
-    url match {
-      case PATTERN(username, gitHubRepoName) => Some(GitHubRepository(username, gitHubRepoName).toURLString)
-      case _ => None
-    }
-  }
 }
 
+object JGitRepositoryUtils {
+  class RepositoryWrapper(repository: Repository) {
+   def login: String = repository.getConfig.getString("github", null, "user")
+   def token: String = repository.getConfig.getString("github", null, "token")
+   def remoteURL: String = repository.getConfig.getString("remote", "origin", "url")
+  }
 
+  implicit def repositoryAccess(repository: Repository): RepositoryWrapper = new RepositoryWrapper(repository)
+}
 
 
 

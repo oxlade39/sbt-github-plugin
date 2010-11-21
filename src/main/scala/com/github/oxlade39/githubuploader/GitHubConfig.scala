@@ -10,11 +10,9 @@ abstract class GitHubConfigFactory {
   def repository: Repository
 
   def apply(): GitHubConfig = {
-    new GitHubConfig(login(repository), token(repository), repoName(repository))
+    new GitHubConfig(repository.login, repository.token, repoName(repository))
   }
 
-  def login(repo: Repository): String = repo.login
-  def token(repo: Repository): String = repo.token
   def repoName(repo: Repository): String =
     GitHubRepositoryExtractor(repo.remoteURL).getOrElse {
       throw new RuntimeException("Couldn't determine url")

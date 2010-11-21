@@ -10,7 +10,7 @@ object GitHubConfigSpec extends Specification {
 
   "GitHubConfigFactory" should {
 
-    "build GitHubConfig using git repository" in {
+    "create GitHubConfig using git repository" in {
       object TestGitHubConfigFactory extends GitHubConfigFactory {
         def repository = new FileRepository(new File("/Users/danoxlade/proj/scala/scalaflow" + "/.git"))
       }

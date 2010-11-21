@@ -20,11 +20,25 @@ abstract class GitHubConfigFactory {
 
 }
 
+trait GitConfig {
+  def githubSectionName: String
+  def remoteSectionName: String
+  def remoteBranchName: String
+}
+
+object DefaultGitConfig extends GitConfig {
+  def githubSectionName = "github"
+  def remoteSectionName = "remote"
+  def remoteBranchName = "origin"
+}
+
 object JGitRepositoryUtils {
+  var config: GitConfig = DefaultGitConfig
+
   class RepositoryWrapper(repository: Repository) {
-   def login: String = repository.getConfig.getString("github", null, "user")
-   def token: String = repository.getConfig.getString("github", null, "token")
-   def remoteURL: String = repository.getConfig.getString("remote", "origin", "url")
+   def login: String = repository.getConfig.getString(config.githubSectionName, null, "user")
+   def token: String = repository.getConfig.getString(config.githubSectionName, null, "token")
+   def remoteURL: String = repository.getConfig.getString(config.remoteSectionName, config.remoteBranchName, "url")
   }
 
   implicit def repositoryAccess(repository: Repository): RepositoryWrapper = new RepositoryWrapper(repository)

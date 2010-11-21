@@ -1,0 +1,15 @@
+*.class
+*.log
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/*.iml
+project/boot/
+project/plugins/project/
+*.iml
+*.ipr
+*.iws
+.idea/

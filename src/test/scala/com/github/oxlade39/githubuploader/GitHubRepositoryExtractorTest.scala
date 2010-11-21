@@ -11,15 +11,19 @@ object GitHubRepositoryExtractorSpec extends Specification {
   "GitHubRepositoryExtractor" should {
 
     "extract a GitHubRepository from the default ssh URL" in {
-      val sshURL = "git@github.com:oxlade39/scala.tmbundle.git"
-      GitHubRepositoryExtractor(sshURL) mustEqual Some(GitHubRepository("oxlade39", "scala.tmbundle"))
+      GitHubRepositoryExtractor("git@github.com:oxlade39/scala.tmbundle.git") mustEqual Some(GitHubRepository("oxlade39", "scala.tmbundle"))
+      GitHubRepositoryExtractor("git@github.com:oxlade39/spring-reference-project.git") mustEqual Some(GitHubRepository("oxlade39", "spring-reference-project"))
     }
 
     "extract a GitHubRepository from the default HTTP URL" in {
-      val httpURL = "https://oxlade39@github.com/oxlade39/scala.tmbundle.git"
-      GitHubRepositoryExtractor(httpURL) mustEqual Some(GitHubRepository("oxlade39", "scala.tmbundle"))
-
+      GitHubRepositoryExtractor("https://oxlade39@github.com/oxlade39/scala.tmbundle.git") mustEqual Some(GitHubRepository("oxlade39", "scala.tmbundle"))
       GitHubRepositoryExtractor("git://github.com/Constellation/ruby-net-github-upload.git") mustEqual Some(GitHubRepository("Constellation", "ruby-net-github-upload"))
+      GitHubRepositoryExtractor("https://github.com/mirrors/linux-2.6.git") mustEqual Some(GitHubRepository("mirrors", "linux-2.6"))
+    }
+
+    "extract a GitHubRepository from the readonly HTTP URL" in {
+      val httpURL = "git://github.com/oxlade39/spring-reference-project.git"
+      GitHubRepositoryExtractor(httpURL) mustEqual Some(GitHubRepository("oxlade39", "spring-reference-project"))
     }
   }
 }

@@ -20,20 +20,20 @@ abstract class GitHubConfigFactory {
 
 }
 
-trait GitConfig {
+trait SbtGitHubPluginConfig {
   def githubSectionName: String
   def remoteSectionName: String
   def remoteBranchName: String
 }
 
-object DefaultGitConfig extends GitConfig {
+object DefaultSbtGitHubPluginConfig extends SbtGitHubPluginConfig {
   def githubSectionName = "github"
   def remoteSectionName = "remote"
   def remoteBranchName = "origin"
 }
 
 object JGitRepositoryUtils {
-  var config: GitConfig = DefaultGitConfig
+  var config: SbtGitHubPluginConfig = DefaultSbtGitHubPluginConfig
 
   class RepositoryWrapper(repository: Repository) {
    def login: String = repository.getConfig.getString(config.githubSectionName, null, "user")

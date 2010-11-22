@@ -5,7 +5,8 @@ import java.net.URL
 
 sealed case class GitHubRepository(owner: String, repositoryName: String) {
   def toURL: URL = new URL(toURLString)
-  def toURLString: String = "https://github.com/"+owner+"/"+repositoryName
+  def toURLString: String = "https://github.com/%s/%s".format(owner, repositoryName)
+  def toDownloadURLString: String = "https://github.com/%s/%s/downloads".format(owner, repositoryName)
 }
 
 object GitHubRepositoryExtractor {
@@ -13,7 +14,10 @@ object GitHubRepositoryExtractor {
 
   def apply(url: String): Option[GitHubRepository] = url match {
     case PATTERN(prefix, owner, repoName) => Some(GitHubRepository(owner, repoName))
-    case _ => None
+    case _ => {
+      println("Couldn't match: %s".format(url))
+      None
+    }
   }
 }
 

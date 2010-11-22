@@ -2,22 +2,30 @@ package com.github.oxlade39.githubuploader
 
 import java.io.File
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.storage.file.FileRepository
+
 sealed case class GitHubConfig(login: String, token: String, repositoryName: String)
 
 abstract class GitHubConfigFactory {
   import JGitRepositoryUtils.repositoryAccess
 
-  def repository: Repository
+  val repository: Repository
 
   def apply(): GitHubConfig = {
-    new GitHubConfig(repository.login, repository.token, repoName(repository))
+    new GitHubConfig(repository.login, repository.token, repoName)
   }
 
-  def repoName(repo: Repository): String =
-    GitHubRepositoryExtractor(repo.remoteURL).getOrElse {
-      throw new RuntimeException("Couldn't determine url")
-    }.repositoryName
+  def gitHubRepository = GitHubRepositoryExtractor(repository.remoteURL).getOrElse {
+    throw new RuntimeException("Couldn't determine url")
+  }
 
+  def repoName: String = gitHubRepository.repositoryName
+
+}
+
+object DefaultGitHubConfigFactory extends GitHubConfigFactory {
+//  val repository = new FileRepository(System.getProperty("user.dir") + "/.git")
+  val repository = new FileRepository("/Users/danoxlade/proj/scala/scalaflow" + "/.git")
 }
 
 trait SbtGitHubPluginConfig {

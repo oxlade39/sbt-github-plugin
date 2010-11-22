@@ -12,7 +12,7 @@ object GitHubConfigSpec extends Specification {
 
     "create GitHubConfig using git repository" in {
       object TestGitHubConfigFactory extends GitHubConfigFactory {
-        def repository = new FileRepository(new File("/Users/danoxlade/proj/scala/scalaflow" + "/.git"))
+        val repository = new FileRepository(new File("/Users/danoxlade/proj/scala/scalaflow" + "/.git"))
       }
 
       println(TestGitHubConfigFactory.apply)

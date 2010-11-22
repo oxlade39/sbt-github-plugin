@@ -22,5 +22,8 @@ object GitHubRepositorySpec extends Specification {
     "give the URL equal to the public github URL" in {
       GitHubRepository("owner", "reponame").toURL mustEqual new java.net.URL("https://github.com/owner/reponame")
     }
+    "give the download URL in the form https://github.com/${login}/${repositoryName}/downloads" in {
+     GitHubRepository("owner", "reponame").toDownloadURLString mustEqual "https://github.com/owner/reponame/downloads"
+    }
   }
 }

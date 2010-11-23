@@ -25,7 +25,7 @@ abstract class GitHubConfigFactory {
 
 object DefaultGitHubConfigFactory extends GitHubConfigFactory {
 //  val repository = new FileRepository(System.getProperty("user.dir") + "/.git")
-  val repository = new FileRepository("/Users/danoxlade/proj/scala/scalaflow" + "/.git")
+  val repository = new FileRepository("/Users/danoxlade/proj/scala/xmpp/scampp" + "/.git")
 }
 
 trait SbtGitHubPluginConfig {

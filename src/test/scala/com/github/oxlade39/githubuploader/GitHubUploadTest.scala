@@ -3,9 +3,11 @@ package com.github.oxlade39.githubuploader
 import org.specs.runner.JUnit4
 import org.specs.Specification
 import org.apache.commons.httpclient.{HttpMethod, HttpClient}
-import org.apache.commons.httpclient.methods.PostMethod
+import org.apache.commons.httpclient.params.HttpMethodParams
 import scala.util.parsing.json.JSON
 import java.io.File
+import org.apache.commons.httpclient.methods.{MultipartPostMethod, PostMethod, PutMethod}
+import org.apache.commons.httpclient.methods.multipart.FilePart
 
 class GitHubUploadTest extends JUnit4(GitHubUploadSpec)
 object GitHubUploadSpec extends Specification {
@@ -18,16 +20,15 @@ object GitHubUploadSpec extends Specification {
       }
 
       val upload = new Upload(
-        "/src/test/resources/upload.text",
-        "my_upload.txt", "a test upload")
+        "upload.text",
+        "test-%s.txt".format(System.currentTimeMillis), "a test upload")
 
       val httpClient: HttpClient = new HttpClient()
       val repoConfig = DefaultGitHubConfigFactory()
       val remoteRepository: GitHubRepository = DefaultGitHubConfigFactory.gitHubRepository
-      val method: PostMethod = new PostMethod(remoteRepository.toDownloadURLString)
 
-      val response = HttpClientHttp.post(remoteRepository.toDownloadURLString, Map[String, String](
-        "file_size" -> upload.fileSize.toString,
+      val response = HttpClientHttp.post(remoteRepository.toDownloadURLString, Map[String, Any](
+        "file_size" -> upload.fileSize,
         "content_type" -> upload.contentType,
         "file_name" -> upload.name,
         "description" -> upload.description,
@@ -35,14 +36,29 @@ object GitHubUploadSpec extends Specification {
         "token" -> repoConfig.token
       ))
 
-      val responseJSON = JSON.parseFull(response.body)
-      println("Code: %s Response: %s".format(response.code, responseJSON))
+      println("Code: %s Response: %s".format(response.code, response.body))
+      val responseJSON: Map[String, Any] = JSON.parseFull(response.body).get.asInstanceOf[Map[String, Any]]
 
+      val amazonResponse = HttpClientHttp.post("http://github.s3.amazonaws.com/", Map[String, Any](
+        "key" -> (responseJSON("prefix") + upload.name),
+        "Filename" -> upload.name,
+        "policy" -> responseJSON("policy"),
+        "AWSAccessKeyId" -> responseJSON("accesskeyid"),
+        "signature" -> responseJSON("signature"),
+        "acl" -> responseJSON("acl"),
+        "file" -> upload.content,
+        "success_action_status" -> 201
+      ))
+      println("Amazon Response Code: %s Response: %s".format(amazonResponse.code, amazonResponse.body))
+
+      amazonResponse.code mustEqual 201
     }
   }
 
   trait Http {
-    def post(url: String, params: Map[String, String]): Response
+    def post(url: String, params: Map[String, Any]): Response
+//    def postMultiPart(url: String, params: Map[String, Any]): Response
+    def put(url: String, params: Map[String, Any]): Response
   }
 
   trait Response {
@@ -53,10 +69,36 @@ object GitHubUploadSpec extends Specification {
   object HttpClientHttp extends Http {
     val client: HttpClient = new HttpClient()
 
-    def post(url: String, params: Map[String, String]) = {
+    def post(url: String, params: Map[String, Any]) = {
+      println("posting: %s".format(params))
       val method: PostMethod = new PostMethod(url)
-      for ((key, value) <- params) method.setParameter(key, value)
+      execute(method, params)
+    }
 
+//    def postMultiPart(url: String, params: Map[String, Any]) = {
+//      println("posting: %s".format(params))
+//      val method: MultipartPostMethod = new MultipartPostMethod(url)
+//      for ((key, value) <- params) {
+//        if(key == "file") {
+//          method.addPart( new FilePart( "sample.txt", new File(), "text/plain", "ISO-8859-1"))
+//        }else {
+//
+//        }
+//      }
+//      val responseCode = client.executeMethod(method)
+//      new HttpClientReponse(responseCode, method)
+//    }
+
+    def put(url: String, params: Map[String, Any]): Response = {
+      println("putting: %s".format(params))
+      val method: PutMethod = new PutMethod(url)
+      execute(method, params)
+    }
+
+    def execute(method: HttpMethod, params: Map[String, Any]): Response = {
+      val methodParams: HttpMethodParams = new HttpMethodParams()
+      for ((key, value) <- params) methodParams.setParameter(key, value.toString)
+      method.setParams(methodParams)
       val responseCode = client.executeMethod(method)
       new HttpClientReponse(responseCode, method)
     }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error>
+    <Code>InvalidArgument</Code>
+    <Message>Conflicting query string parameters: acl, policy</Message>
+    <ArgumentValue>acl</ArgumentValue>
+    <ArgumentName>ResourceType</ArgumentName>
+    <RequestId>24C60D3CBE83C825</RequestId>
+    <HostId>zPHdGSsM4WkMNx4CruKugsL0zr4LonEQ3ZY+pxaEGYBfIhUpdvcNtEgy87ATYC69</HostId>
+</Error>
+
+        putting: Map(AWSAccessKeyId -> 1DWESVTPGHQVTX38V182,
+        success_action_status -> 201,
+        signature -> wlP/B369gJt/Nac+SM/mRFN2s2M=,
+        key -> downloads/oxlade39/scalaflow/my_upload.txt,
+        acl -> public-read,
+        Filename -> my_upload.txt,
+        Content-Type -> text/plain,
+        file -> this is a test uploadwith some text,
+        policy -> ewogICAgJ2V4cGlyYXRpb24nOiAnMjExMC0xMS0yMlQyMzo1NjoyMS4wMDBaJywKICAgICdjb25kaXRpb25zJzogWwogICAgICAgIHsnYnVja2V0JzogJ2dpdGh1Yid9LAogICAgICAgIHsna2V5JzogJ2Rvd25sb2Fkcy9veGxhZGUzOS9zY2FsYWZsb3cvbXlfdXBsb2FkLnR4dCd9LAogICAgICAgIHsnYWNsJzogJ3B1YmxpYy1yZWFkJ30sCiAgICAgICAgeydzdWNjZXNzX2FjdGlvbl9zdGF0dXMnOiAnMjAxJ30sCiAgICAgICAgWydzdGFydHMtd2l0aCcsICckRmlsZW5hbWUnLCAnJ10sCiAgICAgICAgWydzdGFydHMtd2l0aCcsICckQ29udGVudC1UeXBlJywgJyddCiAgICBdCn0=)

@@ -1,7 +1,5 @@
 package com.github.oxlade39.githubuploader
 
-import java.io.File
-
 sealed case class GitHubConfig(login: String, token: String, repository: GitHubRepository) {
 	def repositoryName = repository.repositoryName
 }

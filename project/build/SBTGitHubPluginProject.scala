@@ -1,6 +1,6 @@
 import sbt._
 
-class GitHubUploader(info: ProjectInfo) extends PluginProject(info) with Exec {
+class SBTGitHubPluginProject(info: ProjectInfo) extends PluginProject(info) with Exec {
 
 
   override def buildScalaVersion = "2.8.1"

@@ -2,59 +2,60 @@ package com.github.oxlade39.githubuploader
 
 import org.specs.runner.JUnit4
 import org.specs.Specification
-import scala.util.parsing.json.JSON
-import java.io.File
+import org.specs.mock.Mockito
+import org.mockito.Matchers._
 import scala.collection.mutable.LinkedHashMap
-import org.apache.commons.httpclient.HttpClient
-import org.apache.commons.httpclient.methods.multipart._
 
 class GitHubUploadTest extends JUnit4(GitHubUploadSpec)
-object GitHubUploadSpec extends Specification {
+object GitHubUploadSpec extends Specification with Mockito { 
 
   "HttpGitHubUpload" should {
-
-    "upload files to GitHub" in {
+	
+	  val mockHttp = mock[Http]
+	  val mockConfig = mock[GitHubConfig]
       object underTest extends HttpGitHubUpload {
-        val httpClient = new HttpClient()
+        val http = mockHttp
+		val repoConfig = mockConfig
       }
+	
+    "returns response status from post to github if not 200" in {
+      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns BadResponse(400)
 
-      val upload = new Upload(
+	  val uploadResponse = underTest.upload(new Upload(
         "upload.text",
         "test-%s.txt".format(System.currentTimeMillis), 
 		"a test upload"
-	  )
-
-      val repoConfig = DefaultGitHubConfigFactory()
-      val remoteRepository: GitHubRepository = DefaultGitHubConfigFactory.gitHubRepository
-
-      val response = HttpClientHttp.post(remoteRepository.toDownloadURLString, LinkedHashMap[String, Any](
-        "file_size" -> upload.fileSize,
-        "content_type" -> upload.contentType,
-        "file_name" -> upload.name,
-        "description" -> upload.description,
-        "login" -> repoConfig.login,
-        "token" -> repoConfig.token
-      ))
-
-	  response.code mustEqual 200
-      val responseJSON: Map[String, Any] = JSON.parseFull(response.body).get.asInstanceOf[Map[String, Any]]
-
-	  val files: List[FilePart] = new FilePart("file", upload.file) :: Nil
-      val amazonResponse = HttpClientHttp.postMultiPart("http://github.s3.amazonaws.com/", files,
-		LinkedHashMap[String, Any](
-        "key" -> responseJSON("path"),
-        "Filename" -> upload.name,
-        "policy" -> responseJSON("policy"),
-        "AWSAccessKeyId" -> responseJSON("accesskeyid"),
-        "Content-Type" -> upload.contentType,
-        "signature" -> responseJSON("signature"),
-        "acl" -> responseJSON("acl"),
-        "success_action_status" -> 201
-      ))
-      println("Amazon Response Code: %s Response: %s".format(amazonResponse.code, amazonResponse.body))
-
-      amazonResponse.code mustEqual 201
+	  ))
+	  uploadResponse mustEqual 400
     }
-  }
 
+	"post correctly ordered params to GitHub" in {
+      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns BadResponse(400)
+	  val upload = mock[Upload]
+	  upload.fileSize returns 10
+	  upload.contentType returns "text/plain"
+	  upload.name returns "file.txt"
+	  upload.description returns "description"
+	  mockConfig.login returns "username"
+	  mockConfig.token returns "token_string"
+	
+	  val uploadResponse = underTest.upload(upload)
+	
+	  there was one(mockHttp).post("https://github.com/oxlade39/sbt-github-plugin/downloads", LinkedHashMap[String, Any](
+        "file_size" -> 10,
+        "content_type" -> "text/plain",
+        "file_name" -> "file.txt",
+        "description" -> "description",
+        "login" -> "username",
+        "token" -> "token_string"		
+	  ))	
+	}
+  }
+}
+
+object BadResponse {
+	def apply(_code: Int) = new Response {
+		def code: Int = _code
+	  	def body: String = ""
+	}
 }

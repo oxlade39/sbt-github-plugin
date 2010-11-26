@@ -9,7 +9,6 @@ trait RequiresJGitRepository {
 
 trait JGitFileRepositoryProvider extends RequiresJGitRepository {
  val repository = new FileRepository(System.getProperty("user.dir") + "/.git")	
-  // val repository = new FileRepository("/Users/danoxlade/proj/scala/xmpp/scampp" + "/.git")
 }
 
 object JGitRepositoryUtils {

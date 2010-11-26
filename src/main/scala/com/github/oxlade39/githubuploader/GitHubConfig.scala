@@ -16,3 +16,10 @@ abstract class GitHubConfigFactory extends RequiresJGitRepository{
 
 object DefaultGitHubConfigFactory extends GitHubConfigFactory with JGitFileRepositoryProvider
 
+trait GitHubConfigProvider {
+	val repoConfig: GitHubConfig
+}
+
+trait DefaultGitHubConfigProvider extends GitHubConfigProvider{
+	val repoConfig: GitHubConfig = DefaultGitHubConfigFactory()
+}

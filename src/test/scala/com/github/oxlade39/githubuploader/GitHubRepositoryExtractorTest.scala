@@ -3,7 +3,6 @@ package com.github.oxlade39.githubuploader
 import org.specs.runner.JUnit4
 import org.specs.Specification
 
-class GitHubRepositoryExtractorTest extends JUnit4(GitHubRepositoryExtractorSpec)
 object GitHubRepositoryExtractorSpec extends Specification {
 
   "GitHubRepositoryExtractor" should {

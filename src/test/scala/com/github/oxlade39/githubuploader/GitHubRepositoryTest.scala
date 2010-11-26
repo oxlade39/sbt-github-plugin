@@ -5,7 +5,6 @@ import org.specs.Specification
 import org.eclipse.jgit.storage.file.FileRepository
 import java.io.File
 
-class GitHubRepositoryTest extends JUnit4(GitHubRepositorySpec)
 object GitHubRepositorySpec extends Specification {
 
   "GitHubRepository" should {

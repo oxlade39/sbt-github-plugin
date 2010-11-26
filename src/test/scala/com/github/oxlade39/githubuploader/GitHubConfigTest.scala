@@ -5,7 +5,6 @@ import org.specs.Specification
 import org.eclipse.jgit.storage.file.FileRepository
 import java.io.File
 
-class GitHubConfigTest extends JUnit4(GitHubConfigSpec)
 object GitHubConfigSpec extends Specification {
 
   "GitHubConfigFactory" should {

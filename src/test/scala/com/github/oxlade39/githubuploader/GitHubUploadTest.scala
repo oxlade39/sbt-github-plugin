@@ -8,7 +8,6 @@ import org.mockito.Matchers.{ argThat, anyInt, eq => isEq }
 import scala.collection.mutable.LinkedHashMap
 import org.apache.commons.httpclient.methods.multipart._
 
-class GitHubUploadTest extends JUnit4(GitHubUploadSpec)
 object GitHubUploadSpec extends Specification with Mockito { 
 
   "HttpGitHubUpload" should {
@@ -79,18 +78,19 @@ object GitHubUploadSpec extends Specification with Mockito {
 	}
   }
 
-	//   "real upload" should {
-	// "should show" in {
-	//   object RealUpload extends HttpGitHubUpload with DefaultGitHubConfigProvider {
-	//         val http = HttpClientHttp
-	//       }
-	//   RealUpload.upload(new Upload(
-	//         "upload.text",
-	//         "test-%s.txt".format(System.currentTimeMillis), 
-	// 	"a test upload"
-	//   ))
-	// }
-	//   }
+  "real upload" should {
+	 skip("this will really upload to github")
+	"upload to github" in {
+      object RealUpload extends HttpGitHubUpload with DefaultGitHubConfigProvider {
+		val http = HttpClientHttp
+	  }
+	  RealUpload.upload(new Upload(
+	        "upload.text",
+	        "test-%s.txt".format(System.currentTimeMillis), 
+		"a test upload"
+	  ))
+	}
+  }
 }
 
 object BadResponse {

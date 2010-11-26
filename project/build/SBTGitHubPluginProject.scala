@@ -13,4 +13,5 @@ class SBTGitHubPluginProject(info: ProjectInfo) extends PluginProject(info) with
   val junit = "junit" % "junit" % "4.7" % "test" withSources
   val specs = "org.scala-tools.testing" % "specs_2.8.1" % "1.6.6" % "test" withSources
   val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test" withSources
+  val hamcrest = "org.hamcrest" % "hamcrest-all" % "1.1" % "test" withSources
 }

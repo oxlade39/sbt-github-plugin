@@ -4,7 +4,6 @@ import java.io.File
 import org.apache.commons.httpclient.HttpClient
 import java.net.{URI, URL}
 import scala.util.parsing.json.JSON
-import java.io.File
 import scala.collection.mutable.LinkedHashMap
 import org.apache.commons.httpclient.methods.multipart._
 
@@ -26,7 +25,7 @@ abstract class HttpGitHubUpload extends GitHubUpload with GitHubConfigProvider {
         "login" -> repoConfig.login,
         "token" -> repoConfig.token
       ))
-
+	  // println(response.body)
 	  if(response.code != 200) response.code
 	  else continueWithPostToAmazon(request, response)
   }
@@ -45,7 +44,7 @@ abstract class HttpGitHubUpload extends GitHubUpload with GitHubConfigProvider {
         "acl" -> responseJSON("acl"),
         "success_action_status" -> 201
       ))
-      println("Amazon Response Code: %s Response: %s".format(amazonResponse.code, amazonResponse.body))
+      // println("Amazon Response Code: %s Response: %s".format(amazonResponse.code, amazonResponse.body))
 
 	200	
   }

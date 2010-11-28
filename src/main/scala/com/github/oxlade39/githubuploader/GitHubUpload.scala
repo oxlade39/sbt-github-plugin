@@ -66,8 +66,11 @@ sealed case class Upload(
 ) {
 
   def contentType: String = {
-//    "application/octet-stream"
-    "text/plain"
+	val mimeType = file.getName.indexOf(".") match {
+		case -1 => MimeTypes.find(MimeType("", ""))
+		case index => MimeTypes.find(MimeType(file.getName.substring(index + 1), ""))
+	}
+	mimeType.contentType
   }
 
   lazy val content = io.Source.fromFile(file).getLines.mkString

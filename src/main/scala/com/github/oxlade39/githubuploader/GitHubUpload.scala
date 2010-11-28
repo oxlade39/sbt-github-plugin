@@ -17,7 +17,7 @@ abstract class HttpGitHubUpload extends GitHubUpload with GitHubConfigProvider {
   val gitHubAmazonS3URL = "http://github.s3.amazonaws.com/"
 
   def upload(request: Upload): Int = {
-      val response = http.post(remoteRepository.toDownloadURLString, LinkedHashMap[String, Any](
+      val response = http.post(remoteRepository.toDownloadURLString, params(
         "file_size" -> request.fileSize,
         "content_type" -> request.contentType,
         "file_name" -> request.name,
@@ -31,10 +31,10 @@ abstract class HttpGitHubUpload extends GitHubUpload with GitHubConfigProvider {
   }
 
   def continueWithPostToAmazon(request: Upload, response: Response): Int = {
-      val responseJSON: Map[String, Any] = JSON.parseFull(response.body).get.asInstanceOf[Map[String, Any]]
+      val responseJSON: Map[String, Any] = JSON.parseFull(response.body()).get.asInstanceOf[Map[String, Any]]
 
 	  val files: List[FilePart] = new FilePart("file", request.file) :: Nil
-      val amazonResponse = http.postMultiPart(gitHubAmazonS3URL, files, LinkedHashMap[String, Any](
+      val amazonResponse = http.postMultiPart(gitHubAmazonS3URL, files, params(
         "key" -> responseJSON("path"),
         "Filename" -> request.name,
         "policy" -> responseJSON("policy"),
@@ -44,16 +44,25 @@ abstract class HttpGitHubUpload extends GitHubUpload with GitHubConfigProvider {
         "acl" -> responseJSON("acl"),
         "success_action_status" -> 201
       ))
-      // println("Amazon Response Code: %s Response: %s".format(amazonResponse.code, amazonResponse.body))
 
-	200	
+      sanatise(amazonResponse)
+  }
+
+  def sanatise(response: Response): Int = if(response == null) 500 else
+    response match {
+      case Response(201, _) => 200
+      case Response(other, _) => other
+    }
+
+  def params[A, B](elems: (A, B)*): LinkedHashMap[A, B] = {
+    LinkedHashMap[A, B](elems:_*).asInstanceOf[LinkedHashMap[A, B]]
   }
 }
 
 sealed case class Upload(
-    fileName: String,
+    file: java.io.File,
     name: String,
-    description: String = ""
+    description: String
 ) {
 
   def contentType: String = {
@@ -61,14 +70,6 @@ sealed case class Upload(
     "text/plain"
   }
 
-  private def checkFile = {
-    val uri: URI = Thread.currentThread.getContextClassLoader.getResource(fileName).toURI
-    val f = new File(uri)
-    if(f.exists == false || f.canRead == false) throw new RuntimeException("%s doesn't exist or isn't readable".format(fileName))
-    f
-  }
-
-  val file = checkFile
   lazy val content = io.Source.fromFile(file).getLines.mkString
   lazy val fileSize = file.length
 }

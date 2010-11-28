@@ -20,10 +20,10 @@ object GitHubUploadSpec extends Specification with Mockito {
     }
 
     "return response status from post to github if not 200" in {
-      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns BadResponse(400)
+      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns badResponse(400)
 
       val uploadResponse = underTest.upload(new Upload(
-        "upload.text",
+        testFile,
         "test-%s.txt".format(System.currentTimeMillis),
         "a test upload"
       ))
@@ -31,7 +31,7 @@ object GitHubUploadSpec extends Specification with Mockito {
     }
 
     "post correct params to GitHub download URL" in {
-      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns BadResponse(402)
+      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns badResponse(402)
       val upload = mock[Upload]
       upload.fileSize returns 10
       upload.contentType returns "text/plain"
@@ -42,18 +42,19 @@ object GitHubUploadSpec extends Specification with Mockito {
 
       val uploadResponse = underTest.upload(upload)
 
-      there was one(mockHttp).post("https://github.com/oxlade39/sbt-github-plugin/downloads", LinkedHashMap[String, Any](
+      val params: LinkedHashMap[String, Any] = LinkedHashMap[String, Any](
         "file_size" -> 10,
         "content_type" -> "text/plain",
         "file_name" -> "file.txt",
         "description" -> "description",
         "login" -> "username",
         "token" -> "token_string"
-      ))
+      ).asInstanceOf[LinkedHashMap[String, Any]]
+      mockHttp.post("https://github.com/oxlade39/sbt-github-plugin/downloads", params) was called
     }
 
     "post correct params to amazon s3 if post to GitHub succeeded" in {
-      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns ValidResponse
+      mockHttp.post(any[String], any[LinkedHashMap[String, Any]]) returns validResponse
       val upload = mock[Upload]
       upload.fileSize returns 10
       upload.contentType returns "text/foo"
@@ -65,7 +66,7 @@ object GitHubUploadSpec extends Specification with Mockito {
       val files = new FilePart("file", file) :: Nil
       val uploadResponse = underTest.upload(upload)
 
-      there was one(mockHttp).postMultiPart(isEq("http://github.s3.amazonaws.com/"), haveSize(1), isEq(LinkedHashMap[String, Any](
+      val params: LinkedHashMap[String, Any] = LinkedHashMap[String, Any](
         "key" -> "/path",
         "Filename" -> "test.txt",
         "policy" -> "some_policy",
@@ -74,7 +75,9 @@ object GitHubUploadSpec extends Specification with Mockito {
         "signature" -> "some_sig",
         "acl" -> "some_acl",
         "success_action_status" -> 201
-      )))
+      ).asInstanceOf[LinkedHashMap[String, Any]]
+
+      mockHttp.postMultiPart(isEq("http://github.s3.amazonaws.com/"), any[List[FilePart]], isEq(params)) was called
     }
   }
 
@@ -84,31 +87,26 @@ object GitHubUploadSpec extends Specification with Mockito {
       object RealUpload extends HttpGitHubUpload with DefaultGitHubConfigProvider {
         val http = HttpClientHttp
       }
-      RealUpload.upload(new Upload(
-        "upload.text",
+      val response = RealUpload.upload(new Upload(
+		testFile,
         "test-%s.txt".format(System.currentTimeMillis),
         "a test upload"
       ))
+      response mustEqual 200
     }
   }
-}
 
-object BadResponse {
-	def apply(_code: Int) = new Response {
-		def code: Int = _code
-	  	def body: String = ""
-	}
-}
+  def testFile: java.io.File = new java.io.File(Thread.currentThread.getContextClassLoader.getResource("upload.text").toURI)
 
-object ValidResponse extends Response {
-	def code: Int = 200
-  	def body: String = """
-		{ 
-			"path" : "/path", 
-			"policy" : "some_policy", 
-			"accesskeyid" : "some_access", 
-			"signature" : "some_sig",
-			"acl" : "some_acl"
-		}   
-		"""
+  def badResponse(code: Int) = Response(code, () => "")
+  def validResponse = Response(200, () => """
+      {
+        "path" : "/path",
+        "policy" : "some_policy",
+        "accesskeyid" : "some_access",
+        "signature" : "some_sig",
+        "acl" : "some_acl"
+      }
+      """
+  )
 }

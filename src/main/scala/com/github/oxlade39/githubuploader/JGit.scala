@@ -12,7 +12,8 @@ trait JGitFileRepositoryProvider extends RequiresJGitRepository {
 }
 
 object JGitRepositoryUtils {
-  var config: SbtGitHubPluginConfig = DefaultSbtGitHubPluginConfig
+  def config: SbtGitHubPluginConfig = customConfig.getOrElse(DefaultSbtGitHubPluginConfig)
+  var customConfig: Option[SbtGitHubPluginConfig] = None
 
   class RepositoryWrapper(repository: Repository) {
    def login: String = repository.getConfig.getString(config.githubSectionName, null, "user")

@@ -14,6 +14,12 @@ trait GitHubUploadedArtifacts extends Project with ArtifactFinder {
  def artifacts: Set[sbt.Artifact]
  def projectID : sbt.ModuleID
 
+ def configure: Unit = {
+	JGitRepositoryUtils.customConfig = customConfiguration
+ }
+
+ def customConfiguration: Option[SbtGitHubPluginConfig] = None
+
  lazy val gitHubUpload = task {
 	for(artifactFile <- artifactFiles) {
  		uploader.upload(Upload(artifactFile, artifactFile.getName, "Uploaded by the sbt-github-plugin"))

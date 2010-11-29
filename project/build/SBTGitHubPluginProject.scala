@@ -1,5 +1,6 @@
 import sbt._
 import com.github.oxlade39.githubuploader.GitHubUploadedArtifacts
+import com.github.oxlade39.githubuploader.SbtGitHubPluginConfig
 
 class SBTGitHubPluginProject(info: ProjectInfo) extends PluginProject(info) with Exec with GitHubUploadedArtifacts {
 
@@ -19,5 +20,8 @@ class SBTGitHubPluginProject(info: ProjectInfo) extends PluginProject(info) with
   val specs = "org.scala-tools.testing" % "specs" % "1.6.1" % "test" withSources
   val mockito = "org.mockito" % "mockito-all" % "1.8.0" % "test" withSources
   val hamcrest = "org.hamcrest" % "hamcrest-all" % "1.1" % "test" withSources
+
+ override def customConfiguration: Option[SbtGitHubPluginConfig] = 
+				Some(SbtGitHubPluginConfig("github", "remote", "remoteRefName"))
 
 }

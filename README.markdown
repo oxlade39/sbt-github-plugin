@@ -48,6 +48,17 @@ The default assumptions are:
 * You have set up git with your GitHub token as described [here](http://help.github.com/git-email-settings/)
 * Your GitHub repository is being tracked as *origin*
 
-All of these assumptions are configurable
+All of these assumptions are configurable:
+<pre><code>
+import sbt._
+import com.github.oxlade39.githubuploader.GitHubUploadedArtifacts
+import com.github.oxlade39.githubuploader.SbtGitHubPluginConfig
+
+class SBTGitHubPluginProject(info: ProjectInfo) extends DefaultProject(info) with GitHubUploadedArtifacts {
+
+ override def customConfiguration: Option[SbtGitHubPluginConfig] = 
+				Some(SbtGitHubPluginConfig("github", "remote", "remoteRefName"))
+}
+</code></pre>
 
 ---

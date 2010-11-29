@@ -6,7 +6,7 @@ SBT GitHub tasks
 Supported Tasks:
 -----------------
 
-1. Upload SBT artifacts to GutHub
+1. Upload SBT artifacts to GitHub
 
 Installing Plugin
 -----------------
@@ -19,7 +19,7 @@ Add the following to project/plugins/Plugins.scala:
 	}	
 </code></pre>
 ---
-## 1. Upload SBT artifacts to GutHub
+## 1. Upload SBT artifacts to GitHub
 
 ### Plugin Class: 
 *com.github.oxlade39.githubuploader.GitHubUploadedArtifacts*

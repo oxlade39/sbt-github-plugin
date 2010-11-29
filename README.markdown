@@ -49,4 +49,5 @@ The default assumptions are:
 * Your GitHub repository is being tracked as *origin*
 
 All of these assumptions are configurable
+
 ---

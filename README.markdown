@@ -15,9 +15,10 @@ Add the following to project/plugins/Plugins.scala:
 	import sbt._
 	class Plugins(info: ProjectInfo) extends PluginDefinition(info)
 	{
-	  val sbtGitHubPlugin = "com.github.oxlade39" % "sbt-github-plugin" % "1.0"
+	  val sbtGitHubPlugin = "com.github.oxlade39" % "sbt-github-plugin" % "2.0.1"
 	}	
 </code></pre>
+N.B. The plugin isn't currently in a public repository
 ---
 ## 1. Upload SBT artifacts to GitHub
 

@@ -11,12 +11,13 @@ object GitHubConfigSpec extends Specification {
 
     "create GitHubConfig using git repository" in {
       object TestGitHubConfigFactory extends GitHubConfigFactory {
-        val repository = new FileRepository(new File("/Users/danoxlade/proj/scala/scalaflow" + "/.git"))
+        val repository = new FileRepository(new File(".git"))
       }
 
-      println(TestGitHubConfigFactory.apply)
-      TestGitHubConfigFactory.apply must notBeNull
-      TestGitHubConfigFactory.apply.login mustEqual "oxlade39"
+      val cfg = TestGitHubConfigFactory()
+      println(cfg)
+      cfg must notBeNull
+      cfg.login mustEqual "oxlade39"
     }
   }
 }

@@ -1,12 +1,11 @@
 package com.github.oxlade39.githubuploader
 
-import org.specs.runner._
-import org.specs._
-import org.specs.matcher.Matcher
-import org.specs.mock.Mockito
-import org.mockito.Matchers.{ argThat, anyInt, eq => isEq }
-import scala.collection.mutable.LinkedHashMap
 import org.apache.commons.httpclient.methods.multipart._
+import org.mockito.Matchers.{eq => isEq}
+import org.specs._
+import org.specs.mock.Mockito
+
+import scala.collection.mutable.LinkedHashMap
 
 object GitHubUploadSpec extends Specification with Mockito {
 
@@ -50,7 +49,7 @@ object GitHubUploadSpec extends Specification with Mockito {
         "login" -> "username",
         "token" -> "token_string"
       ).asInstanceOf[LinkedHashMap[String, Any]]
-      mockHttp.post("https://github.com/oxlade39/sbt-github-plugin/downloads", params) was called
+      there was one(mockHttp).post("https://github.com/oxlade39/sbt-github-plugin/downloads", params)
     }
 
     "post correct params to amazon s3 if post to GitHub succeeded" in {
@@ -77,7 +76,7 @@ object GitHubUploadSpec extends Specification with Mockito {
         "success_action_status" -> 201
       ).asInstanceOf[LinkedHashMap[String, Any]]
 
-      mockHttp.postMultiPart(isEq("http://github.s3.amazonaws.com/"), any[List[FilePart]], isEq(params)) was called
+      there was one(mockHttp).postMultiPart(isEq("http://github.s3.amazonaws.com/"), any[List[FilePart]], isEq(params))
     }
   }
 
